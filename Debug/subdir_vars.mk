@@ -8,26 +8,26 @@ CMD_SRCS += \
 
 C_SRCS += \
 ../main.c \
-../startup_ccs.c 
+../tm4c123gh6pm_startup_ccs.c 
 
 OBJS += \
 ./main.obj \
-./startup_ccs.obj 
+./tm4c123gh6pm_startup_ccs.obj 
 
 C_DEPS += \
 ./main.pp \
-./startup_ccs.pp 
+./tm4c123gh6pm_startup_ccs.pp 
 
 C_DEPS__QUOTED += \
 "main.pp" \
-"startup_ccs.pp" 
+"tm4c123gh6pm_startup_ccs.pp" 
 
 OBJS__QUOTED += \
 "main.obj" \
-"startup_ccs.obj" 
+"tm4c123gh6pm_startup_ccs.obj" 
 
 C_SRCS__QUOTED += \
 "../main.c" \
-"../startup_ccs.c" 
+"../tm4c123gh6pm_startup_ccs.c" 
 
 

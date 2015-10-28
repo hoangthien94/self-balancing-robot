@@ -4,21 +4,21 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../UART/MYUART.c 
+../UART/UART.c 
 
 OBJS += \
-./UART/MYUART.obj 
+./UART/UART.obj 
 
 C_DEPS += \
-./UART/MYUART.pp 
+./UART/UART.pp 
 
 C_DEPS__QUOTED += \
-"UART\MYUART.pp" 
+"UART\UART.pp" 
 
 OBJS__QUOTED += \
-"UART\MYUART.obj" 
+"UART\UART.obj" 
 
 C_SRCS__QUOTED += \
-"../UART/MYUART.c" 
+"../UART/UART.c" 
 
 

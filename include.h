@@ -1,32 +1,30 @@
-/*
- * include.h
- *
- *  Created on: Aug 1, 2013
- *      Author: Admin
- */
-
-#ifndef INCLUDE_H_
-#define INCLUDE_H_
-
 #include <stdbool.h>
 #include <stdint.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "inc/hw_ints.h"
+#include <string.h>
+#include <math.h>
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/timer.h"
 #include "driverlib/adc.h"
 #include "driverlib/interrupt.h"
-#include "driverlib/rom.h"
+#include "driverlib/qei.h"
 #include "driverlib/uart.h"
-#include "SystemConfig/SystemConfig.h"
-#include "define.h"
+#include "driverlib/rom.h"
+#include "driverlib/systick.h"
+#include "inc/hw_ints.h"
+#include "inc/hw_gpio.h"
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+
+#include "UART/UART.h"
+#include "PWM/PWM.h"
+#include "motorControl/motorControl.h"
+#include "QEI/QEI.h"
+#include "Timer/Timer.h"
+#include "Processs/Process.h"
+#include "Button/Button.h"
+#include "LED/LED.h"
 #include "PID/PID.h"
-#include "UART/MYUART.h"
-#include "InterruptHandler/InterruptHandler.h"
-#include "ConfigTimer/ConfigTimer.h"
+#include "define.h"
 
-
-#endif /* INCLUDE_H_ */

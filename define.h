@@ -1,22 +1,14 @@
-#ifndef DEFINE_H_
-#define DEFINE_H_
+#ifndef     _DEFINE_H_
+#define     _DEFINE_H_
 
-//#define TEST_ENCODER
-//#define SET_PID
-//#define PID_SPEED
-//#define PID_WALL
-//#define PID_Velocity
+#define     Ts      0.02
 
-//#define USE_QEI
+#ifndef     PART_TM4C123GH6PM
+    #define     PART_TM4C123GH6PM
+#endif
 
-//#define Motor_Left
-#define Motor_Right
+#ifndef  TARGET_IS_BLIZZARD_RB1
+    #define     TARGET_IS_BLIZZARD_RB1
+#endif
 
-#define DEFAULT		20000	//H-Bridge Freq (Hz)
-
-#define ENAPORT_PERIPHERAL	SYSCTL_PERIPH_GPIOE
-#define ENABLE_PORT			GPIO_PORTE_BASE
-#define ENABLE_PIN			GPIO_PIN_2
-//#define ENABLE_PIN			GPIO_PIN_3
-
-#endif /* DEFINE_H_ */
+#endif

@@ -1,5 +1,5 @@
-#ifndef PID_H_
-#define PID_H_
+#ifndef _PID_H_
+#define _PID_H_
 
 typedef struct
 {
@@ -19,9 +19,15 @@ typedef struct
 		int32_t MaxSetpoint;
 } PIDType;
 
+
+
 void PIDSpeedSet(int32_t SpeedSet);
 void PIDPositionSet(int32_t SetPoint);
 void PIDPosCalc(int32_t Position, int32_t MaxResponse);
 void PIDVerCalc(int32_t Speed, int32_t MaxResponse);
+void PIDReset(PIDType* pid_parameter);
+float getPIDPos();
+float getPIDVer();
+bool configPID();
 
-#endif /* PID_H_ */
+#endif /* _PID_H_ */

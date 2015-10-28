@@ -1,53 +1,25 @@
 #include "include.h"
 
-extern PIDType PIDVelocity, PIDPosition;
-extern uint8_t SlaveID;
-extern int32_t Velocity;
-extern UARTType UART_Bluetooth;
-extern uint8_t *p_UARTBuf, UARTBuf[];
-
-void InitPID(void)
-{
-	PIDVelocity.Kp = 0.02;
-	PIDVelocity.Kd = 0.02;
-
-	PIDPosition.Kp = 0.035;//350/10000 ko tai
-	PIDPosition.Kd = 0;
-
-	PIDVelocity.Enable = 0;
-	PIDPosition.Enable = 0;
-}
-
-void ConfigNetwork(void)
-{
-	p_UARTBuf = &UARTBuf[0];
-
-	UART_Bluetooth.PortName = UART7;
-	UART_Bluetooth.BaudRate = 115200;
-	UART_Bluetooth.DataBits = 8;
-	UART_Bluetooth.Parity = None;
-	UART_Bluetooth.StopBits = 1;
-	UART_Bluetooth.ISR = &BluetoothIntHandler;
-	ConfigUART(&UART_Bluetooth);
-}
 
 void main(void)
 {
-	ConfigSystem();
-//	ConfigNetwork();
-	ConfigEncoder();
-	ConfigPWM();
-	ConfigPIDTimer(20, 2);
-	IntMasterEnable();
-	InitPID();
-	SetPWM(DEFAULT, 30);
-	HBridgeEnable();
-	
-//	PIDSpeedSet(10);
-//	Clock = SysCtlClockGet();
+	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+	UARTType newUART0 = { UART0_BASE, 115200, 8, None, 1,&UART0_Handler};
+	ConfigUART(&newUART0);
+	ledInit();
+	buttonInit();
+	qei_init(Ts*1000);
+	timerInit(SysCtlClockGet()/3*Ts);
+	Config_PWM();
+	ConfigDRV_Enable();
+	ConfigBoostCircuit();
+	speed_Enable_Hbridge(true);
+	enableBoostCircuit(true);
+    PIDPositionSet(0);
 	while(1)
 	{
-//		SysCtlDelay(SysCtlClockGet() / 3);
-//		Velocity = ((int32_t)ROM_QEIVelocityGet(QEI0_BASE)) / 2;
+		Balacing_Process();
+		ProcessSpeedControl();
 	}
 }
+
