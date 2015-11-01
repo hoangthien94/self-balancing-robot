@@ -1,1 +1,1 @@
-"./main.obj" "./startup_ccs.obj" "./UART/MYUART.obj" "./SystemConfig/SystemConfig.obj" "./PID/PID.obj" "./InterruptHandler/InterruptHandler.obj" "./ConfigTimer/ConfigTimer.obj" "../tm4c123gh6pm.cmd" -l"libc.a" -l"C:\ti\TivaWare_C_Series-2.1.0.12573\driverlib\ccs\Debug\driverlib.lib" 
+"./main.obj" "./startup_ccs.obj" "./UART/MYUART.obj" "./SystemConfig/SystemConfig.obj" "./PID/PID.obj" "./LCD_LIB/STE2007.obj" "./InterruptHandler/InterruptHandler.obj" "./ConfigTimer/ConfigTimer.obj" "../driverlib.lib" "../tm4c123gh6pm.cmd" -l"libc.a" 

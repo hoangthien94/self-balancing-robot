@@ -106,6 +106,7 @@ SUBDIRS := \
 UART \
 SystemConfig \
 PID \
+LCD_LIB \
 InterruptHandler \
 ConfigTimer \
 

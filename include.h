@@ -28,5 +28,8 @@
 #include "InterruptHandler/InterruptHandler.h"
 #include "ConfigTimer/ConfigTimer.h"
 
+#include "STE2007.h"// LCD1202 driver
+
+
 
 #endif /* INCLUDE_H_ */

@@ -19,4 +19,7 @@
 #define ENABLE_PIN			GPIO_PIN_2
 //#define ENABLE_PIN			GPIO_PIN_3
 
+#define SW1			GPIO_PIN_4
+
+
 #endif /* DEFINE_H_ */

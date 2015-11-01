@@ -4,7 +4,7 @@
 
 SHELL = cmd.exe
 
-CG_TOOL_ROOT := c:/ti/ccsv6/tools/compiler/ti-cgt-arm_5.2.4
+CG_TOOL_ROOT := c:/ti/ccsv6/tools/compiler/ti-cgt-arm_5.2.5
 
 ORDERED_OBJS += \
 $(GEN_CMDS__FLAG) \
@@ -13,11 +13,12 @@ $(GEN_CMDS__FLAG) \
 "./UART/MYUART.obj" \
 "./SystemConfig/SystemConfig.obj" \
 "./PID/PID.obj" \
+"./LCD_LIB/STE2007.obj" \
 "./InterruptHandler/InterruptHandler.obj" \
 "./ConfigTimer/ConfigTimer.obj" \
+"../driverlib.lib" \
 "../tm4c123gh6pm.cmd" \
 -l"libc.a" \
--l"C:\ti\TivaWare_C_Series-2.1.0.12573\driverlib\ccs\Debug\driverlib.lib" \
 
 -include ../makefile.init
 
@@ -30,12 +31,14 @@ RMDIR := RMDIR /S/Q
 -include UART/subdir_vars.mk
 -include SystemConfig/subdir_vars.mk
 -include PID/subdir_vars.mk
+-include LCD_LIB/subdir_vars.mk
 -include InterruptHandler/subdir_vars.mk
 -include ConfigTimer/subdir_vars.mk
 -include subdir_rules.mk
 -include UART/subdir_rules.mk
 -include SystemConfig/subdir_rules.mk
 -include PID/subdir_rules.mk
+-include LCD_LIB/subdir_rules.mk
 -include InterruptHandler/subdir_rules.mk
 -include ConfigTimer/subdir_rules.mk
 -include objects.mk
@@ -141,24 +144,24 @@ BIN_OUTPUTS__QUOTED += \
 all: self_balancing_robot.out
 
 # Tool invocations
-self_balancing_robot.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
+self_balancing_robot.out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: ARM Linker'
-	"c:/ti/ccsv6/tools/compiler/ti-cgt-arm_5.2.4/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --define=TARGET_IS_BLIZZARD_RB1 --display_error_number --diag_warning=225 --diag_wrap=off -z -m"self_balancing_robot.map" --heap_size=0 --stack_size=512 -i"c:/ti/ccsv6/tools/compiler/ti-cgt-arm_5.2.4/lib" -i"c:/ti/ccsv6/tools/compiler/ti-cgt-arm_5.2.4/include" --reread_libs --warn_sections --display_error_number --diag_wrap=off --xml_link_info="self_balancing_robot_linkInfo.xml" --rom_model -o "self_balancing_robot.out" $(ORDERED_OBJS)
+	"c:/ti/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --define=TARGET_IS_BLIZZARD_RB1 --diag_wrap=off --diag_warning=225 --display_error_number -z -m"self_balancing_robot.map" --heap_size=0 --stack_size=512 -i"c:/ti/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/lib" -i"c:/ti/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include" --reread_libs --display_error_number --diag_wrap=off --warn_sections --xml_link_info="self_balancing_robot_linkInfo.xml" --rom_model -o "self_balancing_robot.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 self_balancing_robot.hex: $(EXE_OUTPUTS)
 	@echo 'Invoking: ARM Hex Utility'
-	"c:/ti/ccsv6/tools/compiler/ti-cgt-arm_5.2.4/bin/armhex"  -o "self_balancing_robot.hex" $(EXE_OUTPUTS__QUOTED)
+	"c:/ti/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/bin/armhex"  -o "self_balancing_robot.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "main.pp" "startup_ccs.pp" "UART\MYUART.pp" "SystemConfig\SystemConfig.pp" "PID\PID.pp" "InterruptHandler\InterruptHandler.pp" "ConfigTimer\ConfigTimer.pp" 
-	-$(RM) "main.obj" "startup_ccs.obj" "UART\MYUART.obj" "SystemConfig\SystemConfig.obj" "PID\PID.obj" "InterruptHandler\InterruptHandler.obj" "ConfigTimer\ConfigTimer.obj" 
+	-$(RM) "main.pp" "startup_ccs.pp" "UART\MYUART.pp" "SystemConfig\SystemConfig.pp" "PID\PID.pp" "LCD_LIB\STE2007.pp" "InterruptHandler\InterruptHandler.pp" "ConfigTimer\ConfigTimer.pp" 
+	-$(RM) "main.obj" "startup_ccs.obj" "UART\MYUART.obj" "SystemConfig\SystemConfig.obj" "PID\PID.obj" "LCD_LIB\STE2007.obj" "InterruptHandler\InterruptHandler.obj" "ConfigTimer\ConfigTimer.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

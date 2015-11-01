@@ -6,6 +6,9 @@
 CMD_SRCS += \
 ../tm4c123gh6pm.cmd 
 
+LIB_SRCS += \
+../driverlib.lib 
+
 C_SRCS += \
 ../main.c \
 ../startup_ccs.c 

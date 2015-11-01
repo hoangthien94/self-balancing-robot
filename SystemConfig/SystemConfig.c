@@ -5,14 +5,17 @@
 #include "driverlib/fpu.h"
 #include "driverlib/rom.h"
 
+#define SW1			GPIO_PIN_4
+
+
 uint32_t PIDVerLoop = 0;
 
 extern void Timer5ISR(void);			//Timer 5 - used for PID control
-
+extern void ButtonISR(void);
 #ifndef USE_QEI
 extern void EncoderISR(void);
 #endif
-
+//==============================================================================================================//
 void ConfigSystem(void)
 {
 	//Enable FPU
@@ -25,7 +28,7 @@ void ConfigSystem(void)
 	ROM_GPIOPinTypeGPIOOutput(ENABLE_PORT, ENABLE_PIN);
 	ROM_GPIOPinWrite(ENABLE_PORT, ENABLE_PIN, 0);
 }
-
+//==============================================================================================================//
 void ConfigPIDTimer(uint32_t TimerIntervalms, uint32_t PIDVerlocityLoop)
 {
 	PIDVerLoop = PIDVerlocityLoop;
@@ -38,7 +41,7 @@ void ConfigPIDTimer(uint32_t TimerIntervalms, uint32_t PIDVerlocityLoop)
 	ROM_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
 	ROM_TimerEnable(TIMER5_BASE, TIMER_A);
 }
-
+//==============================================================================================================//
 void ConfigPWM(void)
 {
 	//Configures the rate of the clock provided to the PWM module
@@ -53,8 +56,7 @@ void ConfigPWM(void)
 	ROM_GPIOPinConfigure(GPIO_PB7_M0PWM1);
 	ROM_GPIOPinConfigure(GPIO_PB6_M0PWM0);
 	//Set the mode of operation for a PWM generator 0
-	ROM_PWMGenConfigure(PWM0_BASE, PWM_GEN_0, PWM_GEN_MODE_DOWN |
-                    PWM_GEN_MODE_NO_SYNC);
+	ROM_PWMGenConfigure(PWM0_BASE, PWM_GEN_0, PWM_GEN_MODE_DOWN|PWM_GEN_MODE_NO_SYNC);
 	//Sets the period of the specified PWM generator block
 	ROM_PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, ROM_SysCtlClockGet() / DEFAULT);
 	//Sets the pulse width for the specified PWM output
@@ -120,3 +122,26 @@ void ConfigEncoder(void)
 	GPIOIntClear(GPIO_PORTD_BASE, GPIO_PIN_6);
 #endif
 }
+//==============================================================================================================//Config_LCD
+void Config_LCD(void)
+{
+//	SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+	ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+	ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+//	ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+}
+//==============================================================================================================//Config_Button1
+void Config_Button1(void)
+{
+//Config Buttons
+ROM_GPIODirModeSet(GPIO_PORTF_BASE,  SW1, GPIO_DIR_MODE_IN);
+ROM_GPIOPadConfigSet(GPIO_PORTF_BASE, SW1, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD_WPU);
+//Config GPIO Interrupt for SW1
+ROM_GPIOIntTypeSet(GPIO_PORTF_BASE,SW1, GPIO_FALLING_EDGE);
+GPIOIntRegister(GPIO_PORTF_BASE,&ButtonISR);
+GPIOIntEnable(GPIO_PORTF_BASE, SW1);
+ROM_IntEnable(INT_GPIOF);
+ROM_IntMasterEnable();
+}
+//==============================================================================================================// ButtonISR
+
