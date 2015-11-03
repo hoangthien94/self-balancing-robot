@@ -65,5 +65,6 @@ void UARTPutNum(uint32_t UART_Base, long Num);
 void UARTStringPut(uint32_t ui32Base,const uint8_t* s);
 uint16_t ReadRxBuffer_recv_UART0(uint8_t* rxBuf, uint16_t numToRead);
 uint16_t GetRxData(uint8_t *data, uint16_t len);
+void UARTPrint_num( int32_t num);
 
 #endif /* SEFT_BACLANCING_ROBOT_MYUART_H_ */

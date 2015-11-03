@@ -41,7 +41,10 @@ RMDIR := RMDIR /S/Q
 -include Processs/subdir_vars.mk
 -include PWM/subdir_vars.mk
 -include PID/subdir_vars.mk
+-include MPU6050/subdir_vars.mk
 -include LED/subdir_vars.mk
+-include Kalman/subdir_vars.mk
+-include I2C/subdir_vars.mk
 -include Button/subdir_vars.mk
 -include subdir_rules.mk
 -include motorControl/subdir_rules.mk
@@ -51,7 +54,10 @@ RMDIR := RMDIR /S/Q
 -include Processs/subdir_rules.mk
 -include PWM/subdir_rules.mk
 -include PID/subdir_rules.mk
+-include MPU6050/subdir_rules.mk
 -include LED/subdir_rules.mk
+-include Kalman/subdir_rules.mk
+-include I2C/subdir_rules.mk
 -include Button/subdir_rules.mk
 -include objects.mk
 
@@ -165,7 +171,7 @@ all: self_balancing_robot.out
 self_balancing_robot.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: ARM Linker'
-	"C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --define=TARGET_IS_BLIZZARD_RB1 --display_error_number --diag_warning=225 --diag_wrap=off -z -m"self_balancing_robot.map" --heap_size=0 --stack_size=512 -i"C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/lib" -i"C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/include" --reread_libs --warn_sections --display_error_number --diag_wrap=off --xml_link_info="self_balancing_robot_linkInfo.xml" --rom_model -o "self_balancing_robot.out" $(ORDERED_OBJS)
+	"C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me -g --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --define=TARGET_IS_BLIZZARD_RB1 --display_error_number --diag_wrap=off --diag_warning=225 --abi=eabi -z -m"self_balancing_robot.map" --heap_size=0 --stack_size=512 -i"C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/lib" -i"C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/include" --reread_libs --display_error_number --diag_wrap=off --warn_sections --xml_link_info="self_balancing_robot_linkInfo.xml" --rom_model -o "self_balancing_robot.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -178,8 +184,8 @@ self_balancing_robot.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "main.pp" "tm4c123gh6pm_startup_ccs.pp" "motorControl\motorControl.pp" "UART\UART.pp" "Timer\Timer.pp" "QEI\QEI.pp" "Processs\Process.pp" "PWM\PWM.pp" "PID\PID.pp" "LED\LED.pp" "Button\Button.pp" 
-	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccs.obj" "motorControl\motorControl.obj" "UART\UART.obj" "Timer\Timer.obj" "QEI\QEI.obj" "Processs\Process.obj" "PWM\PWM.obj" "PID\PID.obj" "LED\LED.obj" "Button\Button.obj" 
+	-$(RM) "main.pp" "tm4c123gh6pm_startup_ccs.pp" "motorControl\motorControl.pp" "UART\UART.pp" "UART\uartstdio.pp" "UART\ustdlib.pp" "Timer\Timer.pp" "QEI\QEI.pp" "Processs\Process.pp" "PWM\PWM.pp" "PID\PID.pp" "MPU6050\MPU6050.pp" "LED\LED.pp" "Kalman\Kalman.pp" "I2C\I2C.pp" "Button\Button.pp" 
+	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccs.obj" "motorControl\motorControl.obj" "UART\UART.obj" "UART\uartstdio.obj" "UART\ustdlib.obj" "Timer\Timer.obj" "QEI\QEI.obj" "Processs\Process.obj" "PWM\PWM.obj" "PID\PID.obj" "MPU6050\MPU6050.obj" "LED\LED.obj" "Kalman\Kalman.obj" "I2C\I2C.obj" "Button\Button.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

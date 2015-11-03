@@ -1,140 +1,183 @@
+//*****************************************************************************
+//
+// Raise Your Arm 2013_ Micro Mouse robot.
+//
+// PID.c - PID calculator
+//
+// This is part of revision 1.2 of the RYA Micro Mouse Library.
+//      Happy coding.
+//           Support Team RYA!
+//*****************************************************************************
+
+//*****************************************************************************
+//
+//! \addtogroup PID_api
+//! @{
+//
+//*****************************************************************************
 #include "../include.h"
-#include "PID.h"
 
-#define     SIZE_RX 8
-uint8_t recv[SIZE_RX];
+#define  SIZE_RX        9
 
+//*****************************************************************************
+//
+// Prototypes for the APIs.
+//
+//*****************************************************************************
 
-extern PIDType PIDVelocity ={.Enable = 1,.Kp =0.0011,.Ki = 0.00001, .Kd=0.06,.MaxSetpoint =500, .PIDErrorTemp1 = 0};
-extern PIDType PIDPosition  ={.Enable = 1,.Kp =0.005,.Ki= 0.05, .Kd=0.001,.MaxSetpoint = 50000};
-
-#define     DEBUG_TEST_CONFIG_PID
-//#define     DEBUG_RECV
-
-int32_t RisePulse, FallPulse;
-extern int32_t Position;
-
-void PIDSpeedSet(int32_t SpeedSet)
+uint8_t     recv[SIZE_RX];
+//*****************************************************************************
+//
+//! Write speed set point to PID structure.
+//!
+//!
+//! \param *p_PIDVer is the pointer of PID structure (velocity left or right).
+//! \param SpeedSet is the speed set point.
+//!
+//! \return None.
+//
+//*****************************************************************************
+void PIDSpeedSet(PIDType *p_PIDVer, int32_t SpeedSet)
 {
-	PIDVelocity.Enable = 1;
-	PIDVelocity.SetPoint = SpeedSet;
+    (*p_PIDVer).Enable = 1;
+    (*p_PIDVer).SetPoint = SpeedSet;
+    (*p_PIDVer).iPart = 0;
 }
 
-void PIDPositionSet(int32_t SetPoint)
+//*****************************************************************************
+//
+//! Write Position set point to PID structure
+//!
+//!
+//! \param *p_PID is the pointer of PID structure (position left or right).
+//! \param SetPoint is the position set point.
+//!
+//! \return None.
+//
+//*****************************************************************************
+void PIDPositionSet(PIDType *p_PID, int32_t SetPoint)
 {
-	PIDPosition.Enable = 1;
-	PIDPosition.iPart = 0;
-	PIDPosition.PIDErrorTemp1 = 0;
-	PIDPosition.SetPoint += SetPoint;
-	PIDVelocity.iPart = 0;
-//	ROM_QEIPositionSet(QEI0_BASE, 0);
-//	Position += SetPoint;
+    (*p_PID).Enable = 1;
+    (*p_PID).iPart = 0;
+    (*p_PID).PIDErrorTemp1 = 0;
+    (*p_PID).SetPoint = SetPoint;
 }
 
-void PIDPosCalc(int32_t Position, int32_t MaxResponse)
+//*****************************************************************************
+//
+//! PID Position Calculate control signal (.result) base on set point and real value
+//! with Kp Ki Kd constant.
+//!
+//! \param *p_PIDPos is the pointer of PID structure (position left or right).
+//! \param Position is the real position.
+//! \param MaxResponse is the maximum result of PID.
+//!
+//! \return None.
+//
+//*****************************************************************************
+void PIDPosCalc(PIDType *p_PIDPos, int32_t Position, int32_t MaxResponse)
 {
-	PIDPosition.PIDError = PIDPosition.SetPoint - Position;
-	PIDPosition.pPart = PIDPosition.Kp * PIDPosition.PIDError;
-	PIDPosition.iPart += PIDPosition.Ki * PIDPosition.PIDError;
-	PIDPosition.dPart = PIDPosition.Kd * (PIDPosition.PIDError - PIDPosition.PIDErrorTemp1);
-
-//	Uncomment to enable iPart-limit
-	if (PIDPosition.iPart > 15)
-		PIDPosition.iPart = 15;
-	else if (PIDPosition.iPart < -15)
-		PIDPosition.iPart = -15;
-
-	PIDPosition.PIDResult = PIDPosition.pPart + PIDPosition.iPart + PIDPosition.dPart;
-	if (PIDPosition.PIDResult > MaxResponse)
-		PIDPosition.PIDResult = (float)(MaxResponse);
-	if (PIDPosition.PIDResult < -1 * MaxResponse)
-		PIDPosition.PIDResult = (float)(-1 * MaxResponse);
-	PIDPosition.PIDErrorTemp1 = PIDPosition.PIDError;
+    (*p_PIDPos).PIDError = (*p_PIDPos).SetPoint - Position;
+    (*p_PIDPos).pPart = (*p_PIDPos).Kp * (*p_PIDPos).PIDError;
+    (*p_PIDPos).iPart += (*p_PIDPos).Ki * (*p_PIDPos).PIDError;
+    (*p_PIDPos).dPart = (*p_PIDPos).Kd * ((*p_PIDPos).PIDError - (*p_PIDPos).PIDErrorTemp1);
+    /*
+    //Uncomment to enable iPart-limit
+    if ((*p_PIDPos).iPart > 40)
+        (*p_PIDPos).iPart = 40;
+    else if ((*p_PIDPos).iPart < -40)
+        (*p_PIDPos).iPart = -40;
+    */
+    (*p_PIDPos).PIDResult = (*p_PIDPos).pPart + (*p_PIDPos).iPart + (*p_PIDPos).dPart;
+    if ((*p_PIDPos).PIDResult > MaxResponse)
+        (*p_PIDPos).PIDResult = (double)(MaxResponse);
+    if ((*p_PIDPos).PIDResult < -1 * MaxResponse)
+        (*p_PIDPos).PIDResult = (double)(-1 * MaxResponse);
 }
 
-//MaxResponse: Max Duty Cycle
-void PIDVerCalc(int32_t Speed, int32_t MaxResponse)
+//*****************************************************************************
+//
+//! PID velocity (of motor) Calculate control signal (.result) base on set
+//! point and real value with Kp Ki Kd constant.
+//!
+//! \param *p_PIDVer is the pointer of PID structure (velocity left or right).
+//! \param *Speed is the real speed of robot measurement by encoder
+//! (EncRightCount or EncLeftCount)
+//! \param MaxResponse is the maximum Duty Cycle.
+//!
+//! \return None.
+//
+//*****************************************************************************
+void PIDVerCalc(PIDType *p_PIDVer, int32_t *Speed, int32_t MaxResponse)
 {
-	PIDVelocity.PIDError = PIDVelocity.SetPoint - Speed;
+    (*p_PIDVer).PIDError = (*p_PIDVer).SetPoint - (*Speed);
+    *Speed = 0;
 
-	PIDVelocity.pPart = PIDVelocity.Kp * PIDVelocity.PIDError;
-	PIDVelocity.iPart += PIDVelocity.Ki * PIDVelocity.PIDError;
-	PIDVelocity.dPart = PIDVelocity.Kd * (PIDVelocity.PIDError - PIDVelocity.PIDErrorTemp1);
-/*
-	if (PIDVelocity.iPart > 40)
-		PIDVelocity.iPart = 40;
-	else if (PIDVelocity.iPart < -40)
-		PIDVelocity.iPart = -40;
-*/
-	PIDVelocity.PIDResult += (PIDVelocity.pPart + PIDVelocity.iPart + PIDVelocity.dPart) ;
+    (*p_PIDVer).pPart = (*p_PIDVer).Kp * (*p_PIDVer).PIDError;
+    (*p_PIDVer).iPart += (*p_PIDVer).Ki * (*p_PIDVer).PIDError;
+    (*p_PIDVer).dPart = (*p_PIDVer).Kd * ((*p_PIDVer).PIDError - (*p_PIDVer).PIDErrorTemp1);
 
-	if (PIDVelocity.PIDResult > MaxResponse)
-		PIDVelocity.PIDResult = (float)MaxResponse;
-	if (PIDVelocity.PIDResult < -1 * MaxResponse)
-		PIDVelocity.PIDResult = (float)(-1 * (MaxResponse));
-	PIDVelocity.PIDErrorTemp1 = PIDVelocity.PIDError;
-}
-void PIDReset(PIDType* pid_parameter)
-{
-	pid_parameter->PIDError = 0;
-	pid_parameter->PIDErrorTemp1 = 0;
-	pid_parameter->PIDErrorTemp2 = 0;
-	pid_parameter->PIDResult = 0;
-	pid_parameter->PIDResultTemp = 0;
-}
-float getPIDVer()
-{
-	return PIDVelocity.PIDResult;
-}
-float getPIDPos()
-{
-	return PIDPosition.PIDResult;
+    (*p_PIDVer).PIDResult += ((*p_PIDVer).pPart + (*p_PIDVer).iPart + (*p_PIDVer).dPart) ;
+
+    if ((*p_PIDVer).PIDResult > MaxResponse)
+        (*p_PIDVer).PIDResult = (double)MaxResponse;
+    if ((*p_PIDVer).PIDResult < -1 * MaxResponse)
+        (*p_PIDVer).PIDResult = (double)(-1 * (MaxResponse));
+    (*p_PIDVer).PIDErrorTemp1 = (*p_PIDVer).PIDError;
 }
 
-bool configPID()
+//*****************************************************************************
+//
+//! Make robot move a little bit by set some pulses to two encoder.
+//!
+//! \param PositionLeft is pulse of left encoder.
+//! \param PositionRight is pulse of right encoder.
+//! \return None.
+//
+//*****************************************************************************
+
+
+
+bool configPID(PIDType* _PID )
 {
-    uint16_t size;
+    uint16_t size,i;
+    uint32_t itemp;
+    float ftemp;
     size =  GetRxData(recv, SIZE_RX);
     if ( size != SIZE_RX)
     {
         while( GetRxData(recv, 1));
         return 0;
     }
-    uint32_t temp;
 #ifdef  DEBUG_RECV
-    for (size = 0; size < SIZE_RX; size++ )
+    for (i = 0; i < SIZE_RX; i++ )
     {
-        UARTCharPut(UART0_BASE,recv[size]);
+        UARTCharPut(UART0_BASE,recv[i]);
     }
 #endif
-    for (size = 2; size < SIZE_RX; size++ )
+    for (i = 2; i < SIZE_RX; i++ )
     {
-        recv[size] -= 0x30;
+        recv[i] -= 0x30;
     }
-    temp    = recv[2] * 100000 + recv[3] * 10000 + \
+    itemp    = recv[2] * 100000 + recv[3] * 10000 + \
             recv[4] * 1000 + recv[5] *100 + recv[6] *10 + recv[7];
-    switch( recv[0])
+    ftemp = (float)(itemp) / 100000;
+    switch(recv[1])
     {
-        case 'V':
-        {
-            switch(recv[1])
-            {
-                case 'p':
-#ifdef DEBUG_TEST_CONFIG_PID
-    LED3_SWITCH();
-#endif
-                    PIDVelocity.Kp = temp / 100000;
-                    break;
-
-            }
-        }
-            break;
         case 'P':
+            _PID->Kp = ftemp;
+            break;
+        case 'D':
+            _PID->Kd = ftemp;
+            break;
+        case 'I':
+            _PID->Ki = ftemp;
+            break;
+        case 'S':           // set speed point
+            _PID->SetPoint = itemp;
             break;
         default:
             break;
-            //return 0;       // not PID
     }
     return 1;
 }
-

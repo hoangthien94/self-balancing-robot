@@ -1,23 +1,19 @@
 #ifndef _LED_H_
 #define _LED_H_
 
+#define     PORT(x)                  GPIO_PORT##x##_BASE
+#define     PORTF                    PORT(F)
 
+#define     LED_PORT                 PORTF
+#define     LED_RED_PIN              GPIO_PIN_1
+#define     LED_BLUE_PIN             GPIO_PIN_2
+#define     LED_GREEN_PIN            GPIO_PIN_3
 
-#define	LED_PORT		GPIO_PORTF_BASE
-#define	LED_1_PIN		GPIO_PIN_1
-#define	LED_2_PIN		GPIO_PIN_2
-#define	LED_3_PIN		GPIO_PIN_3
+#define     LedInit()                ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);\
+                                     ROM_GPIOPinTypeGPIOOutput(LED_PORT, LED_RED_PIN | LED_BLUE_PIN |  LED_GREEN_PIN)
 
-#define LED1_ON()	GPIOPinWrite(LED_PORT,LED_1_PIN,LED_1_PIN )
-#define LED2_ON()	GPIOPinWrite(LED_PORT,LED_2_PIN,LED_2_PIN )
-#define LED3_ON()	GPIOPinWrite(LED_PORT,LED_3_PIN,LED_3_PIN )
-
-#define LED1_SWITCH()	GPIOPinWrite(LED_PORT,LED_1_PIN, ~GPIOPinRead(LED_PORT,LED_1_PIN))
-#define LED2_SWITCH()	GPIOPinWrite(LED_PORT,LED_2_PIN, ~GPIOPinRead(LED_PORT,LED_2_PIN))
-#define LED3_SWITCH()	GPIOPinWrite(LED_PORT,LED_3_PIN, ~GPIOPinRead(LED_PORT,LED_3_PIN))
-
-
-
-extern void ledInit();
+#define     LED_ON(x)                ROM_GPIOPinWrite(LED_PORT, x, x)
+#define     LED_OFF(x)               ROM_GPIOPinWrite(LED_PORT, x, ~x)
+#define     LED_TOGGLE(x)            ROM_GPIOPinWrite(LED_PORT, x, ~ROM_GPIOPinRead(LED_PORT, x ))
 
 #endif

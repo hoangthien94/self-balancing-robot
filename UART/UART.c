@@ -258,3 +258,30 @@ uint16_t GetRxData(uint8_t *data, uint16_t len)
         ui16_rxSize = 0;
     return ui16_size;
 }
+void UARTPrint_num( int32_t num)
+{
+    if ( num >= 0)
+    {
+        ROM_UARTCharPut(UART0_BASE,'+');
+        ROM_UARTCharPut(UART0_BASE,num % 10000000 / 1000000 + 0x30);   //6
+        ROM_UARTCharPut(UART0_BASE,num % 1000000 / 100000 + 0x30);     //5
+        ROM_UARTCharPut(UART0_BASE,num % 100000 /10000 +0x30);          //4
+        ROM_UARTCharPut(UART0_BASE,num % 10000 /1000 +0x30 );          //3
+        ROM_UARTCharPut(UART0_BASE,num % 1000 /100 +0x30);          //2
+        ROM_UARTCharPut(UART0_BASE,num % 100 /10 +0x30 );           //1
+        ROM_UARTCharPut(UART0_BASE,num % 10 +0x30);                 //0
+    }
+    else
+    {
+        num = -num;
+        ROM_UARTCharPut(UART0_BASE,'-');
+        ROM_UARTCharPut(UART0_BASE,num %  10000000 / 1000000 + 0x30);
+        ROM_UARTCharPut(UART0_BASE,num %  1000000 / 100000 + 0x30);
+        ROM_UARTCharPut(UART0_BASE,num % 100000 /10000 +0x30);
+        ROM_UARTCharPut(UART0_BASE,num % 10000 /1000 +0x30 );
+        ROM_UARTCharPut(UART0_BASE,num % 1000 /100 +0x30);
+        ROM_UARTCharPut(UART0_BASE,num % 100 /10 +0x30 );
+        ROM_UARTCharPut(UART0_BASE,num % 10 +0x30);
+    }
+   UARTCharPut(UART0_BASE,'\n');
+}

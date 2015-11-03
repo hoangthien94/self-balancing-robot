@@ -41,7 +41,7 @@ void qei_init(uint16_t ms_Timebase)
     GPIOPinTypeQEI(GPIO_PORTD_BASE, GPIO_PIN_6 | GPIO_PIN_7);
     GPIOPinConfigure(GPIO_PD6_PHA0);
     GPIOPinConfigure(GPIO_PD7_PHB0);
-    QEIVelocityConfigure(QEI0_BASE, QEI_VELDIV_2, SysCtlClockGet() * ms_Timebase/ 1000);
+    QEIVelocityConfigure(QEI0_BASE, QEI_VELDIV_2, ROM_SysCtlClockGet() /3 * ms_Timebase/ 1000);
     QEIVelocityEnable(QEI0_BASE);
     QEIEnable(QEI0_BASE);
     QEIIntRegister(QEI0_BASE, &QEI0_VelocityIsr);
@@ -54,7 +54,7 @@ void qei_init(uint16_t ms_Timebase)
     GPIOPinTypeQEI(GPIO_PORTC_BASE, GPIO_PIN_5 | GPIO_PIN_6);
     GPIOPinConfigure(GPIO_PC5_PHA1);
     GPIOPinConfigure(GPIO_PC6_PHB1);
-    QEIVelocityConfigure(QEI1_BASE, QEI_VELDIV_2, SysCtlClockGet() * ms_Timebase/ 1000);
+    QEIVelocityConfigure(QEI1_BASE, QEI_VELDIV_2, SysCtlClockGet() /3 * ms_Timebase/ 1000);
     QEIVelocityEnable(QEI1_BASE);
     QEIEnable(QEI1_BASE);
 

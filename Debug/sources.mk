@@ -116,6 +116,9 @@ QEI \
 Processs \
 PWM \
 PID \
+MPU6050 \
 LED \
+Kalman \
+I2C \
 Button \
 
