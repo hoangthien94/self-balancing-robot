@@ -14,17 +14,12 @@ ORDERED_OBJS += \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "./motorControl/motorControl.obj" \
 "./UART/UART.obj" \
-"./UART/uartstdio.obj" \
-"./UART/ustdlib.obj" \
 "./Timer/Timer.obj" \
 "./QEI/QEI.obj" \
 "./Processs/Process.obj" \
 "./PWM/PWM.obj" \
 "./PID/PID.obj" \
-"./MPU6050/MPU6050.obj" \
 "./LED/LED.obj" \
-"./Kalman/Kalman.obj" \
-"./I2C/I2C.obj" \
 "./Button/Button.obj" \
 "../tm4c123gh6pm.cmd" \
 $(GEN_CMDS__FLAG) \
