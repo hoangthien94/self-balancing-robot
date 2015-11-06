@@ -29,6 +29,7 @@ void ConfigDRV_Enable()
 	SysCtlPeripheralEnable(DRV_ENABLE_RIGHT_CHN_PERIPHERAL);
 	GPIOPinTypeGPIOOutput(DRV_ENABLE_LEFT_CHN_PORT, DRV_ENABLE_LEFT_CHN_PIN);
 	GPIOPinTypeGPIOOutput(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_RIGHT_CHN_PIN);
+//	GPIOPinTypeGPIOOutputOD(DRV_ENABLE_RIGHT_CHN_PORT,DRV_ENABLE_LEFT_CHN_PIN  | DRV_ENABLE_RIGHT_CHN_PIN);
 	//	Turn off DRV when start
 	GPIOPinWrite(DRV_ENABLE_LEFT_CHN_PORT, DRV_ENABLE_LEFT_CHN_PIN, 0);
 	GPIOPinWrite(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_RIGHT_CHN_PIN, 0);
@@ -36,7 +37,7 @@ void ConfigDRV_Enable()
 void Config_PWM(void)
 {
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-	GPIOPinTypeTimer(GPIO_PORTB_BASE, GPIO_PIN_6 |GPIO_PIN_4);
+
 #ifdef	PB2_T3CCP0
 	// Configure timer
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
@@ -48,8 +49,9 @@ void Config_PWM(void)
 	TimerEnable(TIMER3_BASE, TIMER_A);
 #endif
 
-	GPIOPinConfigure(GPIO_PB6_T0CCP0);		//Right
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
+	GPIOPinConfigure(GPIO_PB6_T0CCP0);		//Right
+	GPIOPinTypeTimer(GPIO_PORTB_BASE, GPIO_PIN_6);
 	TimerConfigure(TIMER0_BASE, TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM);
 	TimerLoadSet(TIMER0_BASE, TIMER_A, DEFAULT_FREQ);
 	TimerMatchSet(TIMER0_BASE, TIMER_A, DEFAULT_FREQ); // PWM
@@ -59,6 +61,7 @@ void Config_PWM(void)
 #ifdef	PB4_T1CCP0
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
 	GPIOPinConfigure(GPIO_PB4_T1CCP0);
+	GPIOPinTypeTimer(GPIO_PORTB_BASE, GPIO_PIN_4);
 	TimerConfigure(TIMER1_BASE, TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM);
 	TimerLoadSet(TIMER1_BASE, TIMER_A, DEFAULT_FREQ);
 	TimerMatchSet(TIMER1_BASE, TIMER_A, DEFAULT_FREQ); // PWM
@@ -66,13 +69,13 @@ void Config_PWM(void)
 	TimerEnable(TIMER1_BASE, TIMER_A);
 #endif
 
-	SetPWM(PWM_1,DEFAULT_FREQ,00);
-	SetPWM(PWM_2,DEFAULT_FREQ,00);
+	SetPWM(PWM_LEFT,DEFAULT_FREQ, 0);
+	SetPWM(PWM_RIGHT,DEFAULT_FREQ, 0);
 }
 void SetPWM(uint32_t ulBaseAddr, uint32_t ulTimer, uint32_t ulFrequency, int32_t ucDutyCycle)
 {
 	uint32_t ulPeriod;
-	ulPeriod = SysCtlClockGet() / ulFrequency;
+	ulPeriod = ROM_SysCtlClockGet() / ulFrequency;
 	TimerLoadSet(ulBaseAddr, ulTimer, ulPeriod);
 	if (ucDutyCycle > 90)
 		ucDutyCycle = 90;
@@ -84,8 +87,9 @@ void speed_Enable_Hbridge(bool Enable)
 {
 	if (Enable)
 	{
-		GPIOPinWrite(DRV_ENABLE_LEFT_CHN_PORT, DRV_ENABLE_LEFT_CHN_PIN, DRV_ENABLE_LEFT_CHN_PIN);
-		GPIOPinWrite(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_RIGHT_CHN_PIN, DRV_ENABLE_RIGHT_CHN_PIN);
+		GPIOPinWrite(DRV_ENABLE_LEFT_CHN_PORT,
+		        DRV_ENABLE_LEFT_CHN_PIN | DRV_ENABLE_RIGHT_CHN_PIN , DRV_ENABLE_LEFT_CHN_PIN |DRV_ENABLE_RIGHT_CHN_PIN);
+
 	}
 	else
 	{

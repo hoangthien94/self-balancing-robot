@@ -7,35 +7,35 @@
 #include "motorControl.h"
 #include "../include.h"
 
-static	int32_t	dutycyclesmotor1 = 0, dutycyclesmotor2 = 0;
-static bool changemotor1 = false, changemotor2 = false;
+static	int32_t	dutycyclesmotorrleft = 0, dutycyclesmotorright = 0;
+static bool changemotorleft = false, changemotorright = false;
 
 void setSpeedMotor(MOTOR typeMotor, int32_t speed)
 {
-	int dutycycles	= speed;		//	speed max 630.
-	if( typeMotor == MOTOR1)
+	int32_t dutycycles	= speed;		//	speed max 630.
+	if( typeMotor == MOTORLEFT)
 	{
-		changemotor1 = true;
-		dutycyclesmotor1 = dutycycles;
+		changemotorleft = true;
+		dutycyclesmotorrleft = dutycycles;
 	}
-	else if( typeMotor == MOTOR2)
+	else if( typeMotor == MOTORRIGHT)
 	{
-		changemotor2 = true;
-		dutycyclesmotor2 = dutycycles;
+		changemotorright = true;
+		dutycyclesmotorright = -dutycycles;         //inverted
 	}
 }
 
 void ProcessSpeedControl()
 {
-	if( changemotor1)
+	if( changemotorleft)
 	{
-		changemotor1 = false;
-		SetPWM(PWM_1, DEFAULT_FREQ, dutycyclesmotor1);
+		changemotorleft = false;
+		SetPWM(PWM_LEFT, DEFAULT_FREQ, dutycyclesmotorrleft);
 	}
-	if(changemotor2 )
+	if(changemotorright )
 	{
-		changemotor2 = false;
-		SetPWM(PWM_2, DEFAULT_FREQ, dutycyclesmotor2);
+		changemotorright = false;
+		SetPWM(PWM_RIGHT, DEFAULT_FREQ, dutycyclesmotorright);
 	}
 }
 

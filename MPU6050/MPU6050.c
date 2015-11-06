@@ -114,8 +114,10 @@ void mpu6050_Config()
 	while(1)
 	{
 		status=i2c_ReadByte(MPU6050_ADDRESS,MPU6050_PWR_MGMT_1);
+
 		if(status == 0x40)
 		{
+
 			break;
 		}
 		//delay ...........
@@ -126,6 +128,8 @@ void mpu6050_Config()
 	status=i2c_ReadByte(MPU6050_ADDRESS,MPU6050_WHO_AM_I);
 	if(status == MPU6050_ADDRESS)
 	{
+	    ;
+	    ;
 	}
 	else
 	{

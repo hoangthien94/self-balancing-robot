@@ -5,8 +5,8 @@
 
 typedef	enum
 {
-	MOTOR1,
-	MOTOR2,
+	MOTORLEFT = 0,
+	MOTORRIGHT = 1,
 }	MOTOR;
 
 extern void setSpeedMotor(MOTOR typeMotor, int32_t speed);

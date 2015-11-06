@@ -44,7 +44,7 @@ void timerInit(uint32_t ms_Timebase)
     SysCtlPeripheralEnable( SYSCTL_PERIPH_TIMER2);
     //CONFIG TIMER2
     TimerConfigure(TIMER2_BASE, TIMER_CFG_PERIODIC_UP );
-    TimerLoadSet(TIMER2_BASE, TIMER_A, ROM_SysCtlClockGet() /3 * ms_Timebase/ 1000);
+    TimerLoadSet(TIMER2_BASE, TIMER_A, ROM_SysCtlClockGet() * ms_Timebase/ 1000);
     IntEnable(INT_TIMER2A);
     TimerIntEnable(TIMER2_BASE,TIMER_TIMA_TIMEOUT);
     IntMasterEnable();

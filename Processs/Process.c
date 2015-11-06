@@ -8,12 +8,7 @@
 
 #include  "../include.h"
 #include "Process.h"
-
-#define 	_DEBUG_QEI
-//#define     DEBUG_POS
-//#define 	_DEBUG_SPEED
-//#define     _CONFIG_PID
-#define     _CONFIG_PID_SPEED
+#include "math.h"
 
 
 //**********************************************
@@ -28,6 +23,8 @@ extern double compRoll, compPitch;
 extern double kalRoll, kalPitch, kalYaw = 0;
 extern Kalman RollKalman, PitchKalman;
 extern bool KalmanStarted;
+static MODE mode_action = SLEEP_MODE;
+
 
 //**********************************************
 //
@@ -43,12 +40,20 @@ float test=20.0f;
 //	@Private Variable
 //
 //**********************************************
-PIDType PIDPosLeft = {.Enable = 1,.Kp = 0.000002, .Ki = 0.0000, . Kd =0.000 };
-PIDType PIDPosRight;
-PIDType PIDSpeedLeft = {.Enable = 1, .Kp = 0.001, .Ki =0.00005,.Kd = 0.0001};
-PIDType PIDSpeedRight;
-int32_t speedLeft,speedRight;
-int32_t PIDPosLeftResult = 0, PIDPosRightResult, PIDSpeedLeftResult = 0, PIDSpeedRightResult;
+//PIDType PIDPosLeft = {.Enable = 1,.Kp = 0.000002, .Ki = 0.0000, . Kd =0.000 };
+
+
+extern PIDType     PIDAngle= {.Enable = 1, .Kp = 1, .Ki = 0.00001 ,.Kd = 0.00 , .SetPoint = 0};
+static int32_t    SpeedLeft = 0, SpeedRight = 0;
+static double    accelory = 0;
+//PIDType PIDPosRight;
+//PIDType PIDSpeedLeft = {.Enable = 1, .Kp = 0.1, .Ki =0.006,.Kd = 0.001};
+//PIDType PIDSpeedRight = {.Enable = 1, .Kp = 0.1, .Ki =0.006,.Kd = 0.001};
+
+//PIDType PIDSpeedRight;
+//int32_t speedLeft,speedRight;
+//int32_t PIDPosLeftResult = 0, PIDPosRightResult, PIDSpeedLeftResult = 0, PIDSpeedRightResult;
+
 
 //**********************************************
 //
@@ -65,8 +70,8 @@ void CalulateData()
 {
     if (KalmanStarted)
     {
-//      mpu6050_Read_AccelXYZ(&AccelX, &AccelY, &AccelZ);
-//      mpu6050_Read_GyroXYZ(&GyroX, &GyroY, &GyroZ);
+        //      mpu6050_Read_AccelXYZ(&AccelX, &AccelY, &AccelZ);
+        //      mpu6050_Read_GyroXYZ(&GyroX, &GyroY, &GyroZ);
         mpu6050_Read_All(&AccelX, &AccelY, &AccelZ,&GyroX, &GyroY, &GyroZ);
         double roll  = atan2(AccelY, AccelZ) * RAD_TO_DEG;
         double pitch = atan(-AccelX / sqrt(AccelY * AccelY + AccelZ * AccelZ)) * RAD_TO_DEG;
@@ -103,23 +108,24 @@ void CalulateData()
         if (gyroPitch < -180 || gyroPitch > 180)
             gyroPitch = kalPitch;
 
-//      Chuyển đổi dữ liệu giữa VĐK với Processing:
-//      tiva truyền Uart kiểu này:
-//      "roll,pitch,yaw!", sổ x 1000 (/1000 bên Processing)
-//      ví dụ: 0.16234,0.20715,15.6253 --> 1620,2070,15625!
+        //      Chuyển đổi dữ liệu giữa VĐK với Processing:
+        //      tiva truyền Uart kiểu này:
+        //      "roll,pitch,yaw!", sổ x 1000 (/1000 bên Processing)
+        //      ví dụ: 0.16234,0.20715,15.6253 --> 1620,2070,15625!
 
-//      UARTPut_int32(UART0_BASE,kalPitch);
-//      UARTPut_int32(UART0_BASE,compPitch);
+        //      UARTPut_int32(UART0_BASE,kalPitch);
+        //      UARTPut_int32(UART0_BASE,compPitch);
 #ifdef  DEBUG
-        int temp = kalRoll * 1000;
+        int32_t temp = (int32_t)(kalPitch * 1000);
         UARTPutNum(UART0_BASE, temp);
-        UARTprintf(",");
-        temp = kalPitch * 1000;
-        UARTPutNum(UART0_BASE, temp);
-        UARTprintf(",");
-        temp = kalYaw * 1000;
-        UARTPutNum(UART0_BASE, temp);
-        UARTprintf("!\0");
+        //UARTprintf("\n");
+        UARTStringPut(UART0_BASE,"\n");
+        //        temp = kalPitch * 1000;
+        //        UARTPutNum(UART0_BASE, temp);
+        //        UARTprintf(",");
+        //        temp = kalYaw * 1000;
+        //        UARTPutNum(UART0_BASE, temp);
+        //        UARTprintf("!\n");
 #endif
     }
 }
@@ -137,37 +143,92 @@ void CalulateData()
 
 void Balacing_Process()
 {
-	if (getControlFlag())
-	{
-	    setControlFlag(false);
-	    CalulateData();
+    if (getControlFlag())
+    {
+        setControlFlag(false);
+        CalulateData();
+        accelory =  sin( kalPitch )  * 9.81;
 
-#ifdef  _CONFIG_PID
-	    configPID( &PIDSpeedLeft);
-#endif
+        PIDPosCalc(&PIDAngle, accelory, 90);
+        accelory = - (int32_t) PIDAngle.PIDResult;
+        SpeedLeft = accelory;
+        SpeedRight = accelory;
+        if (( SpeedLeft > 60))
+        {
+            SpeedLeft = 60;
+            SpeedRight = 60;
+        }
+        else if( SpeedLeft < -60 )
+        {
+            {
+                SpeedLeft = -60;
+                SpeedRight = -60;
+            }
+        }
 
-		qei_getVelocity(1, &speedLeft);
-		qei_getVelocity(0, &speedRight);
-#ifdef _DEBUG_QEI
-		UARTPrint_num(speedLeft);
-#endif
+        setSpeedMotor(MOTORLEFT, SpeedLeft *1.5);
+        setSpeedMotor(MOTORRIGHT, SpeedRight);
 
-#ifdef  _CONFIG_PID_SPEED
-        //set   speed 300 to test
-        PIDSpeedSet(&PIDSpeedLeft, 200);
-		PIDVerCalc(&PIDSpeedLeft, &speedLeft, 600);
-		setSpeedMotor(MOTOR2, (int32_t)(PIDSpeedLeft.PIDResult));
-#else
-		EncLeft += speedLeft;
-		PIDPosCalc( &PIDPosLeft, EncLeft, 20000);
-		PIDPosLeftResult = (int32_t)( PIDPosLeft.PIDResult);
-		PIDSpeedSet(&PIDSpeedLeft, PIDPosLeftResult);
-		PIDVerCalc(&PIDSpeedLeft, &speedLeft, 600);
-		setSpeedMotor(MOTOR2, (int32_t)(PIDSpeedLeft.PIDResult));
-#endif
 #ifdef  DEBUG_POS
-		UARTPrint_num(EncLeft);
+        UARTPrint_num(EncLeft);
 #endif
-	}
+    }
 
+}
+
+
+void setMode( MODE  mode)
+{
+    mode_action = mode;
+}
+MODE getMode()
+{
+    return mode_action;
+}
+
+void Sleep()
+{
+    if(getControlFlag())
+    {
+        setControlFlag( 0);
+        static uint8_t count = 100;
+        if (!( count --) )
+        {
+            static bool flag = 0;
+            if ( !flag)
+            {
+                LED_ON( LED_RED_PIN);
+                count = 5;
+                flag = 1;
+            }
+            else
+            {
+                LED_OFF( LED_RED_PIN);
+                count = 100;
+                flag = 0;
+            }
+
+        }
+    }
+}
+void Implement_Process()
+{
+    switch(mode_action)
+    {
+        case SLEEP_MODE:
+            Sleep();
+            break;
+        case WAKEUP_MODE:
+            break;
+        case BALANCING_MODE:
+            LED_ON(LED_BLUE_PIN);
+            Balacing_Process();
+            ProcessSpeedControl();
+            break;
+        case MOVE_MODE:
+            break;
+        default:
+            break;
+
+    }
 }

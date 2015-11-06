@@ -48,6 +48,7 @@ Processs/Process.obj: ../Processs/../MPU6050/MPU6050.h
 Processs/Process.obj: ../Processs/../Kalman/Kalman.h
 Processs/Process.obj: C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/include/math.h
 Processs/Process.obj: ../Processs/../define.h
+Processs/Process.obj: C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/include/math.h
 
 ../Processs/Process.c: 
 ../Processs/../include.h: 
@@ -97,3 +98,4 @@ C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/include/math.h:
 ../Processs/../Kalman/Kalman.h: 
 C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/include/math.h: 
 ../Processs/../define.h: 
+C:/ti/ccsv6/tools/compiler/ti-cgt-arm_15.9.0.STS/include/math.h: 

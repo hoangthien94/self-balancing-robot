@@ -14,12 +14,18 @@ ORDERED_OBJS += \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "./motorControl/motorControl.obj" \
 "./UART/UART.obj" \
+"./UART/uartstdio.obj" \
+"./UART/ustdlib.obj" \
 "./Timer/Timer.obj" \
 "./QEI/QEI.obj" \
 "./Processs/Process.obj" \
+"./Processs/sine.obj" \
 "./PWM/PWM.obj" \
 "./PID/PID.obj" \
+"./MPU6050/MPU6050.obj" \
 "./LED/LED.obj" \
+"./Kalman/Kalman.obj" \
+"./I2C/I2C.obj" \
 "./Button/Button.obj" \
 "../tm4c123gh6pm.cmd" \
 $(GEN_CMDS__FLAG) \
@@ -184,8 +190,8 @@ self_balancing_robot.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "main.pp" "tm4c123gh6pm_startup_ccs.pp" "motorControl\motorControl.pp" "UART\UART.pp" "UART\uartstdio.pp" "UART\ustdlib.pp" "Timer\Timer.pp" "QEI\QEI.pp" "Processs\Process.pp" "PWM\PWM.pp" "PID\PID.pp" "MPU6050\MPU6050.pp" "LED\LED.pp" "Kalman\Kalman.pp" "I2C\I2C.pp" "Button\Button.pp" 
-	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccs.obj" "motorControl\motorControl.obj" "UART\UART.obj" "UART\uartstdio.obj" "UART\ustdlib.obj" "Timer\Timer.obj" "QEI\QEI.obj" "Processs\Process.obj" "PWM\PWM.obj" "PID\PID.obj" "MPU6050\MPU6050.obj" "LED\LED.obj" "Kalman\Kalman.obj" "I2C\I2C.obj" "Button\Button.obj" 
+	-$(RM) "main.pp" "tm4c123gh6pm_startup_ccs.pp" "motorControl\motorControl.pp" "UART\UART.pp" "UART\uartstdio.pp" "UART\ustdlib.pp" "Timer\Timer.pp" "QEI\QEI.pp" "Processs\Process.pp" "Processs\sine.pp" "PWM\PWM.pp" "PID\PID.pp" "MPU6050\MPU6050.pp" "LED\LED.pp" "Kalman\Kalman.pp" "I2C\I2C.pp" "Button\Button.pp" 
+	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccs.obj" "motorControl\motorControl.obj" "UART\UART.obj" "UART\uartstdio.obj" "UART\ustdlib.obj" "Timer\Timer.obj" "QEI\QEI.obj" "Processs\Process.obj" "Processs\sine.obj" "PWM\PWM.obj" "PID\PID.obj" "MPU6050\MPU6050.obj" "LED\LED.obj" "Kalman\Kalman.obj" "I2C\I2C.obj" "Button\Button.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

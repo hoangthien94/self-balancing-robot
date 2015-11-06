@@ -50,22 +50,39 @@ void main(void)
     ConfigUART(&newUART0);
     /* Led Initilize, use PF1, PF2, PF3         */
     LedInit();
-    LED_ON(LED_BLUE_PIN);
     buttonInit();
     /*  QEI Init  QEI0 and QEI1                 */
+    i2c_Config();
+    mpu6050_Config();
     qei_init(Ts *1000);
     /*  Configure   timer, use Timer 2          */
     timerInit(Ts * 1000);
     Config_PWM();
     ConfigDRV_Enable();
     ConfigBoostCircuit();
-    speed_Enable_Hbridge(true);
-    enableBoostCircuit(true);
-    KalmanStarted=true;
+    enableBoostCircuit(1);
+    speed_Enable_Hbridge(1);
+
+    initKalman(&PitchKalman);
+    initKalman(&RollKalman);
+//  mpu6050_Read_AccelXYZ(&AccelX, &AccelY, &AccelZ);
+    mpu6050_Read_All(&AccelX, &AccelY, &AccelZ,&GyroX, &GyroY, &GyroZ);
+
+    double roll  = atan2(AccelY, AccelZ) * RAD_TO_DEG;
+    double pitch = atan(-AccelX / sqrt(AccelY * AccelY + AccelZ * AccelZ)) * RAD_TO_DEG;
+
+    // Set starting angle
+    setAngle(&RollKalman,roll);
+    setAngle(&PitchKalman,pitch);
+    gyroRoll = roll;
+    gyroPitch = pitch;
+    compPitch = roll;
+    compPitch = pitch;
+
+    KalmanStarted = true;
     while(1)
     {
-        Balacing_Process();
-        ProcessSpeedControl();
+        Implement_Process();
     }
 }
 
